@@ -39,7 +39,10 @@
 来源：力扣（LeetCode）
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 */
-int maxProfit(int* prices, int pricesSize){
+
+
+// 原来写的代码，逻辑太复杂，自己都不想看了，太绕了...
+int maxProfit1(int* prices, int pricesSize){
     int i = 0,j = 1;
     int find = 0;
     int max = 0;
@@ -94,6 +97,66 @@ int maxProfit(int* prices, int pricesSize){
             }
         }
     }
+}
+
+
+/* 使用单调栈 */
+int maxProfit2(int* prices, int pricesSize){
+    int* stack = (int*)malloc(pricesSize * sizeof(int));
+    int stackIndex = 0;
+    stack[stackIndex++] = prices[0];
+    int max = 0;
+    for (int i = 1; i < pricesSize; ++i)
+    {
+        if (stack[stackIndex - 1] <= prices[i])
+        {
+            stack[stackIndex++] = prices[i];
+        }
+        else
+        {
+            max += stack[stackIndex - 1] - stack[0];
+            stackIndex = 0;
+            stack[stackIndex++] = prices[i];
+        }
+    }
+    /* 有可能数据一直是单调递增的，数据全部在栈里 */
+    if (stackIndex >= 1)
+    {
+        max += stack[stackIndex - 1] - stack[0];
+    }
+    free(stack);
+    return max;
+}
+
+
+/* 再优化，栈里只记录最小最大值 */
+int maxProfit(int* prices, int pricesSize){
+    int stack[2];
+    int stackIndex = 0;
+    stack[stackIndex++] = prices[0];
+    int max = 0;
+    for (int i = 1; i < pricesSize; ++i)
+    {
+        if (stack[stackIndex - 1] <= prices[i])
+        {
+            if (stackIndex == 2)
+            {
+                stackIndex = 1;
+            }
+            stack[stackIndex++] = prices[i];
+        }
+        else
+        {
+            max += stack[stackIndex - 1] - stack[0];
+            stackIndex = 0;
+            stack[stackIndex++] = prices[i];
+        }
+    }
+    if (stackIndex >= 1)
+    {
+        max += stack[stackIndex - 1] - stack[0];
+    }
+    return max;
 }
 
 int main(void)

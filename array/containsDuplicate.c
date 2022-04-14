@@ -62,13 +62,9 @@ bool containsDuplicate_1(int* nums, int numsSize){
             return true;
         }
     }
+    delete_all(hNums);
     return false;
 }
-
-bool containsDuplicate(int* nums, int numsSize){
-
-}
-
 
 
 //////////////////////自己实现hash/////////////////////////
@@ -137,13 +133,6 @@ void Put(MyHashMap* obj, int key,int value) {
     }
     Node* head = obj->set[index];
     Node* t = head;
-    // while (t!=NULL){
-    //     if(t->key==key){
-    //         t->val = value;
-    //         return;
-    //     }
-    //     t = t->next;
-    // }
     Node* node = (Node*)malloc(sizeof(Node));
     node->key = key;
     node->val = value;
@@ -158,7 +147,9 @@ void Remove(MyHashMap* obj, int key) {
     Node *pre;
     Node *cur = head;
     if(cur==NULL)
+    {
         return;
+    }
     if(cur->key == key){
         pre = cur;
         cur = cur->next;

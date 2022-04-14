@@ -47,6 +47,10 @@ nums 已按升序排列
 来源：力扣（LeetCode）
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 */
+
+/**
+ * 这个写法太垃圾了，时间复杂度是O(N^3)
+ */
 int removeDuplicates(int* nums, int numsSize){
     int i, j, k;
     for (i = 1; i < numsSize; i++)
@@ -67,6 +71,30 @@ int removeDuplicates(int* nums, int numsSize){
     }
     return numsSize;
 }
+
+/**
+ * 双指针
+ */
+int removeDuplicates(int* nums, int numsSize){
+    int i = 0;
+    int j = 1;
+    int size = 1;
+    if (numsSize <= 1)
+    {
+        return numsSize;
+    }
+    for (;j < numsSize; ++j)
+    {
+        if (nums[i] != nums[j])
+        {
+            nums[++i] = nums[j];
+            ++size;
+        }
+    }
+    return size;
+}
+
+
 int main(void)
 {
     int nums[] = {1,1,2,3,2,3,4,3,5};
