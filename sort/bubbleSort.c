@@ -23,7 +23,7 @@ void swap(int* a, int* b)
 
 void bubbleSort(int* nums, int size)
 {
-    /* 外循环用于控制内循环的边界 */
+    /* 外循环用于控制内循环的右边界 */
     int i = 0;
     for (; i < size - 1; ++i)
     {

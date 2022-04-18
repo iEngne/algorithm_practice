@@ -41,10 +41,7 @@ void selectionSort(int* nums, int size)
                 minIndex = j;
             }
         }
-        if (i != minIndex)
-        {
-            swap(&nums[minIndex], &nums[i]);
-        }
+        swap(&nums[minIndex], &nums[i]);
     }
 }
 

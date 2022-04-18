@@ -10,6 +10,7 @@
  */
 
 #include "stdio.h"
+#include "stdlib.h"
 
 typedef struct HeapStruct
 {
@@ -24,15 +25,15 @@ HeapStruct* initialize(int maxSize)
     HeapStruct* h = (HeapStruct*)malloc(sizeof(HeapStruct));
     if (!h)
     {
-        printf("out of memory\n")
+        printf("out of memory\n");
         return NULL;
     }
     h->capacity = maxSize;
     h->size = 0;
-    h->heap = (int*)malloc(maxSize * sizeof(int) + 1); /**< 加1是因为数组从下标1开始，空间要多一个 */
+    h->heap = (int*)malloc((maxSize + 1) * sizeof(int)); /**< 加1是因为数组从下标1开始，空间要多一个 */
     if (!h->heap)
     {
-        printf("out of memory\n")
+        printf("out of memory\n");
         free(h);
         return NULL;
     }
@@ -65,7 +66,7 @@ void insert(HeapStruct* h, int x)
         return;
     }
     int i = ++h->size;
-    for (; h->heap[i >> 1] > x; i >>= 1)
+    for (; (i >> 1) >= 1 && h->heap[i >> 1] > x; i >>= 1)
     {
         h->heap[i] = h->heap[i >> 1];
     }
@@ -75,27 +76,33 @@ void insert(HeapStruct* h, int x)
 
 /**
  * @brief 删除最小元素，下滤
- * 
+ * 上滤或者下滤过程类似于插入排序
  * @param h 
  * @param x 
  */
-int deleteMin(HeapStruct* h , int x)
+int deleteMin(HeapStruct* h)
 {
-    int i = 1;
+    if (h->size == 0)
+    {
+        printf("no element\n");
+        return 0;
+    }
+    int i;
     int min = h->heap[1];
     int child;
     int lastOne = h->heap[h->size];
-    for (; child <= h->size;)
+    for (i = 1; i * 2 <= h->size;i = child)
     {
         child = i * 2;
-        if (h->heap[child + 1] < h->heap[child])
+        /* 找到左右child中的最小者 */
+        if (child < h->size && h->heap[child + 1] < h->heap[child])
         {
             ++child;
         }
         /* 删除的时候，一定会有一个位置空出来，
-           使用子元素和最后一个元素三者间最小的元素去填充
+           使用左右子元素和最后一个元素三者间最小的元素去填充
         */
-        if (lastOne > h-heap[child])
+        if (lastOne > h->heap[child])
         {
             h->heap[i] = h->heap[child];
         }
@@ -103,8 +110,32 @@ int deleteMin(HeapStruct* h , int x)
         {
             break;
         }
-        i = child;
     }
     h->heap[i] = lastOne;
+    --h->size;
     return min;
+}
+
+
+int main(void)
+{
+    int array[] = {3,4,1,2,5,7,8,6,5,9,10,5};
+    HeapStruct* h = initialize(sizeof(array)/sizeof(int));
+    int i = 0;
+    for (i = 0; i < sizeof(array)/sizeof(int); ++i)
+    {
+        insert(h, array[i]);
+    }
+    for (i = 0; i < sizeof(array)/sizeof(int); ++i)
+    {
+        printf("%d,", h->heap[i]);
+    }
+    printf("\n");
+    while (h->size > 0)
+    {
+        printf("%d ", deleteMin(h));
+    }
+    printf("\n");
+    deinitialize(h);
+    return 0;
 }
