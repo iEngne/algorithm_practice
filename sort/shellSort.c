@@ -33,8 +33,8 @@ void shellSort(int* nums, int size)
         for (i = increment; i < size; ++i)
         {
             int key = nums[i];
-            int j = i - increment;
-            for (; j >= 0 && nums[j] > key; j -= increment)
+            int j;
+            for (j = i - increment; j >= 0 && nums[j] > key; j -= increment)
             {
                 nums[j + increment] = nums[j];
             }
