@@ -32,15 +32,6 @@ int find_max(int* arr, int size)
     return max;
 }
 
-void print(int* arr, int size)
-{
-    int i;
-    for (i = 0; i < size; ++i)
-    {
-        printf("%d ", arr[i]);
-    }
-    printf("\n");
-}
 
 void radix_sort(int* arr, int size)
 {
@@ -66,22 +57,19 @@ void radix_sort(int* arr, int size)
         {
             snd_arr[--bucket[(arr[i] / exp) % BASE]] = arr[i];
         }
-        // for (i = 0; i < size; ++i)
-        // {
-        //     snd_arr[--bucket[(arr[i] / exp) % BASE]] = arr[i];
-        // }
+        /* 交换两个指针，这样就不用复制了，来回倒腾 */
         int * tmp;
         tmp = arr;
         arr = snd_arr;
         snd_arr = tmp;
         memset(bucket, 0 , BASE * sizeof(int));
         exp *= BASE;
-        //print(arr, size);
     }
     if (backup != arr)
     {
         memcpy(arr, snd_arr, size * sizeof(int));
     }
+    free(snd_arr);
 }
 
 int main(void)
