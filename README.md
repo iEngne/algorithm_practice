@@ -1,2 +1,2 @@
 # algorithm_practice
-LeetCode算法题练习
+数据结构和算法练习
