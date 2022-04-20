@@ -1,7 +1,7 @@
 /**
  * @file counting_sort.c
  * @author your name (you@domain.com)
- * @brief 计数排序，作为一种线性时间复杂度的排序，
+ * @brief 计数排序，非比较排序，作为一种线性时间复杂度的排序，
  * 计数排序要求输入的数据必须是有确定范围的整数，并且数据最好集中在一定的范围内，
  * 如果有个数特别大或者特别小，内存浪费会比较大。
  * @version 0.1
@@ -71,10 +71,16 @@ void counting_sort(int* arr, int size)
     {
         count_arr[i] += count_arr[i - 1];
     }
+    /* 计数排序，i从0开始还是size - 1开始无所谓，基数排序必须跟
+    上一步中的个数累加顺序有关 */
     for (i = size - 1; i >= 0; --i)
     {
         sorted_arr[--count_arr[arr[i] - min]] = arr[i];
     }
+    // for (i = 0; i < size; ++i)
+    // {
+    //     sorted_arr[--count_arr[arr[i] - min]] = arr[i];
+    // }
     /*******************************************************/
     for (i = 0; i < size; ++i)
     {
