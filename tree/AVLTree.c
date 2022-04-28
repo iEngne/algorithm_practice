@@ -1,7 +1,7 @@
 /**
  * @file searchTree.c
  * @author your name (you@domain.com)
- * @brief 实现一个AVL树
+ * @brief 实现一个高度自平衡的AVL树
  * @version 0.1
  * @date 2022-04-11
  * 
@@ -14,6 +14,7 @@
 #include "errno.h"
 #include "string.h"
 #include "math.h"
+#include <sys/time.h>
 
 #ifndef _Search_Tree_H
 #define _Search_Tree_H
@@ -32,7 +33,7 @@ typedef enum ERorateDir{
 
 struct TreeNode {
     int elem;
-    int count;
+    int count; /**< 一个节点相同元素计数 */
     int height; ///< 树的高度
     struct TreeNode* left;
     struct TreeNode* right;

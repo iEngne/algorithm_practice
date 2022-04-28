@@ -65,11 +65,40 @@ int* intersect(int* nums1, int nums1Size, int* nums2, int nums2Size, int* return
     return ret;
 }
 
+int* intersect1(int* nums1, int nums1Size, int* nums2, int nums2Size, int* returnSize)
+{
+    int *arr1 = (int*)calloc(1001, sizeof(int));
+    int *arr2 = (int*)calloc(1001, sizeof(int));
+    int *ret_arr = (int*)malloc(nums1Size * sizeof(int));
+    int i;
+    for (i = 0; i < nums1Size; ++i)
+    {
+        ++arr1[nums1[i]];
+    }
+    for (i = 0; i < nums2Size; ++i)
+    {
+        ++arr2[nums2[i]];
+    }
+    *returnSize = 0;
+    for (i = 0; i < 1001; ++i)
+    {
+        int count = arr1[i] < arr2[i]? arr1[i]:arr2[i];
+        while (count--)
+        {
+            ret_arr[(*returnSize)++] = i;
+        }
+    }
+    free(arr1);
+    free(arr2);
+    return ret_arr;
+}
+
+
 int nums1[] = {4,9,5}, nums2[] = {9,4,9,8,4};
 
 int main(){
     int size = 0;
-    int * ret = intersect(nums1,sizeof(nums1)/sizeof(int), nums2, sizeof(nums2)/sizeof(int), &size);
+    int * ret = intersect1(nums1,sizeof(nums1)/sizeof(int), nums2, sizeof(nums2)/sizeof(int), &size);
     while (--size >= 0){
         printf("ret:%d\n", ret[size]);
     }

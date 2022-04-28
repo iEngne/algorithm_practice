@@ -31,6 +31,7 @@ strs[i] 仅由小写英文字母组成
  */
 #include "stdio.h"
 #include "stdlib.h"
+#include <string.h>
 
 char * longestCommonPrefix(char ** strs, int strsSize){
     int i = 0;
@@ -43,7 +44,7 @@ char * longestCommonPrefix(char ** strs, int strsSize){
         }
     }
     char *s = (char*)calloc(strlen(minStr) + 1,sizeof(char));
-    for{j = 0; *j; ++j){
+    for(j = 0; minStr[j]; ++j){
         char c = minStr[j];
         for (i = 0; i < strsSize; ++i){
             if (c != strs[i][j]){
@@ -57,5 +58,9 @@ char * longestCommonPrefix(char ** strs, int strsSize){
 }
 
 int main(void){
+    char* strs[] = {"flower","flow","flight"};
+    char* s = longestCommonPrefix(strs, sizeof(strs)/sizeof(char*));
+    printf("%s ", s);
+    free(s);
     return 0;
 }

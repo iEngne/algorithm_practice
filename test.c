@@ -52,5 +52,46 @@ int main()
     for (; i < sizeof(a1)/sizeof(char); ++i){
         printf("%d\n",a1[i]);
     }
+
+    /* 将十六进制字符串转为int型 */
+    char*  s = "C83A35230831";
+    int low,high;
+    i = 0;
+    while (s[i])
+    {
+        high = s[i];
+        low = s[i + 1];
+        /* 大写字母转小写字母 */
+        if (high >= 'a')
+        {
+            high = high - ('a' - 'A');
+        }
+        if (low >= 'a')
+        {
+            low = low - ('a' - 'A');
+        }
+        high = high - '0';
+        low = low - '0';
+        /* 如果是字母,转成数字 */
+        if (high > 9)
+        {
+            high -= ('A' - '9' - 1);
+        }
+        if (low > 9)
+        {
+            low -= ('A' - '9' - 1);
+        }
+        printf("%5d ", high * 16 + low);
+        i += 2;
+    }
+    printf("\n");
+    char* str_buf = "C";
+    int ref_bssid[6];
+    for (int i = 0; i < 6; i++)
+    {
+        sscanf(str_buf, "%02x", (int *)&ref_bssid[i]);
+        printf("%#x ", ref_bssid[i]);
+        str_buf += 2;
+    }
     return(0);
 }

@@ -52,7 +52,7 @@
 #include "math.h"
 
 
-///////////////////////////判断质数///////////////////////////
+/******************判断质数**********************/
 /**
  * @brief 枚举法
  *
@@ -64,7 +64,7 @@
  * 版本3：对于所有大于3的质数具有6n+1(n >= 1)或者6n-1的性质
  * 
  */
-//结合2和3的代码示例，时间复杂度O(sqrt(n))
+// 结合2和3的代码示例，时间复杂度O(sqrt(n))
 // leetcode中，计算从1到709486有几个质数，耗时28ms
 bool isPrime3(int n){
     if (n == 1){
@@ -79,7 +79,8 @@ bool isPrime3(int n){
     int i;
     int j = sqrt(n);
     for (i = 5; i <= j; i += 6){
-        // 形如6n+1(n >= 1)或者6n-1的合数，一定可以被6k+1或者6k-1的数所整除
+        // 形如6k+1(k >= 1)或者6k-1的合数，一定可以被6m+1或者6m-1的数所整除
+        // 因为合数肯定可以因式分解，而所有的质数都形如6m + 1 或者6m - 1(m >=1)
         if (n % i == 0 || n % (i + 2) == 0){
             return false;
         }
@@ -235,21 +236,29 @@ int countPrimes3(int n){
         // 以下这组循环，意思是以一个固定的倍数i去乘以不同的质数，并加上0 == i % primeNums[j]判断来保证
         // 这些数是以primeNums[j]为最小质因数的合数
         for (j = 0; i * primeNums[j] < n; ++j){
-            // primeNums[]存放的是从小到大排列的质数，i在这组循环中都是不变的，当j从0开始遍历的时候，
-            // 一开始的一次或几次循环中，i*primeNums[j]得到的合数，肯定是以primeNums[j]为最小质因数的。
-            // 那么这些数都可以打上标记。i % primeNums[j] == 0是在判断primeNums[j]是不是i的最小质因数.
-            // 当j继续增大，也就是质数继续增大，如果出现i可以被某个primeNums[j]整除，
-            // 说明此时i可以分解成primeNums[j]和一个比primeNums[j]大的质数的乘积，
-            // 那么此时primeNums[j]的值还是i*primeNums[j]的最小质因数，但是下一次循环，
-            // 也就是primeNums[k]*i(k等于上一次循环的j+1)的值，却不是以primeNums[k]为最小质因数的合数了，
-            // 因为此时i已经可以被上一次循环的primeNums[j]因式分解，i可以表示成m*primeNums[j](m>=primeNums[j]),
-            // primeNums[j]比primeNums[k]小，所以primeNums[k]*i的最小质因数是上次循环的primeNums[j],
-            // 于是primeNums[j+1]*i可以表示成 primeNums[j+1]*m*primeNums[j],
-            // 令primeNums[j+1]*m为i',这不就是后面会遍历到的数吗？所以不应该这次循环中标记，
+            // primeNums[]存放的是从小到大排列的质数，i在内循环中都是不变的，
+            // i作为一个倍数去乘以质数来得到不同的合数。当j从0开始遍历的时候，
+            // 一开始的一次或几次循环中，i * primeNums[j]得到的合数，肯定是以
+            // primeNums[j]为最小质因数的。那么这些数都可以打上标记。i % primeNums[j] == 0
+            // 是在判断primeNums[j]是不是i的最小质因数。当j继续增大，
+            // 如果出现某个i0可以被某个primeNums[j0]整除，说明此时i0可以分解成
+            // primeNums[j0]和一个比primeNums[j0]大的质数的乘积，我们将这个比primeNums[j0]大
+            // 的数称为primeNums[j1]。此时，
+            // i0 * primeNums[j0] = primeNums[j0] * primeNums[j1] * primeNums[j0](其中j1 > j0)。
+            // primeNums[j0]的值还是i0 * primeNums[j0]这个合数的最小质因数，但是下一次循环，
+            // 也就是i0 * primeNums[k0](其中k0 = j0 + 1)，却不是以primeNums[k0]为最小质因数的合数了，
+            // 因为i0 * primeNums[k0] = primeNums[j0] * primeNums[j1] * primeNums[k0],
+            // 这里最小的质数是primeNums[j0],i0已经可以被上一次循环的primeNums[j0]因式分解。
+            // 如果仍然标记flag[i0 * primeNums[k0]] = 1,会造成重复标记。因为
+            // 令i_ = primeNums[j1] * primeNums[k0] > i0, i0 * primeNums[k0] = i_ * primeNums[j0],
+            // 即当外层循环递增i_时，又会标记一次i0 * primeNums[k0]这个合数。
             // 所以当i % primeNums[j] == 0时，应该推出循环了。
             flag[i * primeNums[j]] = 1;
             // j继续增大，会不会一直找不到primeNums[j]可以整除i,不可能，为什么？
-            // 因为小于等于i的质数已经都放进了primeNUms[]中,在这些质数中一定存在一个质数可以整除i。
+            // 因为小于等于i的质数都在primeNums中，
+            // 如果i是合数，合数一定可以因式分解，一定存在小于i的质数能整除i，
+            // 如果i是质数，那么i已经放在了primeNums中，正好是最后一个，
+            // 质数当然可以被自己整除。
             if ((0 == i % primeNums[j])){
                 break;
             }
