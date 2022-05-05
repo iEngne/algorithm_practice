@@ -1,7 +1,7 @@
 /**
- * @file traverse_BFS_DFS.c
+ * @file splay_tree_traverse_BFS_DFS.c
  * @author your name (you@domain.com)
- * @brief 实现伸展二叉树以及广度优先遍历和深度优先遍历
+ * @brief 实现伸展树,实现队列和栈用于广度优先遍历和深度优先遍历
  * @version 0.1
  * @date 2022-04-21
  * 
@@ -226,6 +226,134 @@ void insert(SplayTree* root, int x)
     }
 }
 
+
+/**
+ * @brief 二叉查找树的查找操作
+ * 
+ * @param root 
+ * @param x 
+ * @return Position 
+ */
+Position find_search_tree(SplayTree root, int x)
+{
+    if (!root)
+    {
+        printf("error:not found\n");
+        return NULL;
+    }
+    if (x < root->val)
+    {
+        return find_search_tree(root->left, x);
+    }
+    else if (x > root->val)
+    {
+        return find_search_tree(root->right, x);
+    }
+    else
+    {
+        return root;
+    }
+}
+
+
+Position find_max(SplayTree root)
+{
+    if (!root)
+    {
+        return root;
+    }
+    if (root->right)
+    {
+        return root;
+    }
+    else
+    {
+        return find_max(root->right);
+    }
+}
+
+
+Position find_min(SplayTree root)
+{
+    if (!root)
+    {
+        return root;
+    }
+    if (!root->left)
+    {
+        return root;
+    }
+    else
+    {
+        return find_min(root->left);
+    }
+}
+
+/**
+ * @brief 删除元素，删除操作跟二叉查找树的删除一致
+ * 为了保持删除元素后的树依然是查找树，需要将删除节点的左子树的最大值
+ * 或者右子树中的最小值移动到删除的地方，移动有两种方案：
+ * 1. 仅移动链表节点中的值
+ * 2. 移动链表的节点
+ * 这里使用第1种方案, 第2种有点麻烦
+ * @param root 
+ * @param x 
+ * @return Position 
+ */
+Position delete(SplayTree root, int x)
+{
+    if (!root)
+    {
+        printf("error:not found\n");
+        return root;
+    }
+    if (x < root->val)
+    {
+        root->left = delete(root->left, x);
+    }
+    else if (x > root->val)
+    {
+        root->right = delete(root->right, x);
+    }
+    else
+    {
+        if (root->left && root->right)
+        {
+            if (root->count >= 2)
+            {
+                --root->count;
+            }
+            else
+            {
+                Position tmp = find_min(root->right);
+                root->val = tmp->val;
+                root->count = tmp->count;
+                root->right = delete(root->right, tmp->val);
+            }
+        }
+        else
+        {
+            Position tmp = root;
+            if (!root->left)
+            {
+                root = root->right;
+            }
+            else if (!root->right)
+            {
+                root = root->left;
+            }
+            free(tmp);
+        }
+    }
+    return root;
+}
+
+/**
+ * @brief 清空树，释放内存
+ * 
+ * @param root 
+ * @return Position 
+ */
 Position delete_all(SplayTree root)
 {
     if (root)
@@ -306,7 +434,13 @@ Position rotate_right(Position p, Position cur)
     return cur;
 }
 
-/* 伸展树的查找操作将找到的元素伸展到根节点 */
+/**
+ * @brief 伸展树的查找操作要求将找到的元素伸展到根节点
+ * 
+ * @param cur_pos 
+ * @param x 
+ * @return Position 
+ */
 Position find(SplayTree cur_pos, int x)
 {
     if (!cur_pos)
@@ -411,7 +545,12 @@ Position find(SplayTree cur_pos, int x)
 
 }
 
-
+/**
+ * @brief 随机生成一棵二叉查找树
+ * 
+ * @param size 
+ * @return SplayTree 
+ */
 SplayTree make_random_bin_tree(int size)
 {
     struct timeval tv;
@@ -429,7 +568,11 @@ SplayTree make_random_bin_tree(int size)
     return tree;
 }
 
-
+/**
+ * @brief 深度优先遍历(后序遍历)
+ * 
+ * @param root 
+ */
 void traverse_DFS(SplayTree root)
 {
     Stack stack = NULL;
@@ -466,6 +609,11 @@ int is_empty_queue(Queue* queue)
 }
 
 
+/**
+ * @brief 广度优先遍历(层序遍历)
+ * 
+ * @param root 
+ */
 void traverse_BFS(SplayTree root)
 {
     Queue queue = {0};
@@ -486,7 +634,12 @@ void traverse_BFS(SplayTree root)
     }
 }
 
-
+/**
+ * @brief 前序遍历
+ * 
+ * @param root 
+ * @param level 
+ */
 void pre_order_traverse(SplayTree root, int level)
 {
     if (root)
@@ -497,6 +650,12 @@ void pre_order_traverse(SplayTree root, int level)
     }
 }
 
+/**
+ * @brief 中序遍历
+ * 
+ * @param root 
+ * @param level 
+ */
 void in_order_traverse(SplayTree root, int level)
 {
     if (root)
@@ -508,13 +667,20 @@ void in_order_traverse(SplayTree root, int level)
 
 }
 
+
+/**
+ * @brief 后序遍历
+ * 
+ * @param root 
+ * @param level 
+ */
 void post_order_traverse(SplayTree root, int level)
 {
     if (root)
     {
         post_order_traverse(root->left, level + 1);
         post_order_traverse(root->right, level + 1);
-        printf("%d-%d ", level, root->val);
+        printf("%d-%d-%p ", level, root->val, root);
     }
 }
 
@@ -525,11 +691,13 @@ int main(void)
     int arr[] = {32,50,2,84,69,98,73,62,20,9};
     int i = 0;
     SplayTree root = NULL;
-    for (i = 0; i < 10; ++i)
+    for (i = 0; i < sizeof(arr)/sizeof(int); ++i)
     {
         insert(&root, arr[i]);
     }
     root = find(root, 73);
+    printf("--%p--\n", find_search_tree(root, 62));
+    delete(root, 50);
     printf("---------------------\n");
     pre_order_traverse(root, 0);
     printf("\n");

@@ -1,7 +1,7 @@
 /**
- * @file searchTree.c
+ * @file AVLTree.c
  * @author your name (you@domain.com)
- * @brief 实现一个高度自平衡的AVL树
+ * @brief 实现AVL树
  * @version 0.1
  * @date 2022-04-11
  * 
@@ -51,6 +51,55 @@ void releaseSTree(TreeNode* t){
 }
 
 
+
+int height(Position root)
+{
+    if (!root)
+    {
+        printf("Line:%d, error:node does not exist\n", __LINE__);
+        return -1;
+    }
+    if (root->left && root->right)
+    {
+        return fmax(root->left->height, root->right->height) + 1;
+    }
+    else if (root->left && !root->right)
+    {
+        return root->left->height + 1;
+    }
+    else if (!root->left && root->right)
+    {
+        return root->right->height + 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+
+int height_lr_diff(Position root)
+{
+    if (root->right && root->left)
+    {
+        return root->left->height > root->left->height? \
+               root->left->height - root->right->height: \
+               root->right->height - root->left->height;
+    }
+    else if (root->left && !root->right)
+    {
+        return root->left->height + 1;
+    }
+    else if (!root->left && root->right)
+    {
+        return root->right->height + 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
 Position singleRotate(Position k, ERorateDir dir){
     Position k1;
     if (dir == ROTATE_L){
@@ -62,8 +111,8 @@ Position singleRotate(Position k, ERorateDir dir){
         k->right = k1->left;
         k1->left = k;
     }
-    k->height = fmax(k->left->height, k->right->height) + 1;
-    k1->height = fmax(k1->left->height, k1->right->height) + 1;
+    k->height = height(k);
+    k1->height = height(k1);
     return k1;
 }
 
@@ -80,7 +129,7 @@ Position doubleRotateWithRight(Position k){
 }
 
 /**
- * @brief 
+ * @brief 插入操作，插入后做平衡调整
  * 
  * @param tree 
  * @param x 
@@ -88,10 +137,10 @@ Position doubleRotateWithRight(Position k){
  */
 TreeNode* insert(TreeNode* tree, int x){
     if (!tree){
-        TreeNode* tree = (TreeNode*)malloc(sizeof(TreeNode));
+        tree = (TreeNode*)malloc(sizeof(TreeNode));
         if (!tree){
-            perror("error");
-            tree = NULL;
+            printf("error:out of memory\n");
+            return NULL;
         }
         tree->elem = x;
         tree->count = 1;
@@ -99,28 +148,31 @@ TreeNode* insert(TreeNode* tree, int x){
         tree->left = NULL;
         tree->right = NULL;
     }else {
+        int diff_height;
         if (x < tree->elem){
             tree->left = insert(tree->left, x);
+            diff_height = height_lr_diff(tree);
             /* 插入之后判断是否需要调整平衡 */
-            if (tree->left - tree->right == 2){
+            if (diff_height == 2){
                 /* L-L型 */
                 if (x < tree->left->elem){
-                    tree->left = singleRotate(tree->left, ROTATE_L);
+                    tree = singleRotate(tree, ROTATE_L);
                 /* L-R型 */
                 }else if (x > tree->left->elem){
-                    tree->right = doubleRotateWithLeft(tree->right);
+                    tree = doubleRotateWithLeft(tree);
                 }
             }
         }else if (x > tree->elem){
             tree->right = insert(tree->right, x);
+            diff_height = height_lr_diff(tree);
             /* 插入之后判断是否需要调整平衡 */
-            if (tree->right - tree->left == 2){
+            if (diff_height == 2){
                 /* R-R型 */
-                if (x > tree->left->elem){
-                    tree->right = singleRotate(tree->right, ROTATE_R);
+                if (x > tree->right->elem){
+                    tree = singleRotate(tree, ROTATE_R);
                 /* R-L型 */
-                }else if (x < tree->left->elem){
-                    tree->right = doubleRotateWithRight(tree->right);
+                }else if (x < tree->right->elem){
+                    tree = doubleRotateWithRight(tree);
                 }
             }
         }else{
@@ -128,7 +180,7 @@ TreeNode* insert(TreeNode* tree, int x){
             return tree;
         }
     }
-    tree->height = fmax(tree->left->height, tree->right->height) + 1;
+    tree->height = height(tree);
     return tree;
 }
 
@@ -168,39 +220,43 @@ TreeNode* findMax(TreeNode* tree){
 }
 
 /**
- * @brief 
+ * @brief AVL树的删除，删除后需要做调整平衡
  * 
  * @param tree 
  * @param x 
  * @return TreeNode* ,新树的root节点
  */
-
-
 TreeNode* 
-delete(tree, x)
-TreeNode* tree;int x;
+delete(root, x)
+TreeNode* root;int x;
 {
-    if (!tree)
+    if (!root)
     {
+        printf("Lline:%d, error: node does not exist\n", __LINE__);
         return NULL;
     }
-    if (x < tree->elem)
+    int height_diff;
+    if (x < root->elem)
     {
-        tree->left = delete(tree->left, x);
-        if (tree->right->height - tree->left->height == 2)
+        root->left = delete(root->left, x);
+        height_diff = height_lr_diff(root);
+        /* 1.如果被删除的元素不是叶子节点，是去高的子树中去找的替代的叶子节点，
+        然后删除叶子节点。
+        2.如果本来要删除的就是叶子节点，那跟上面的后半部分动作一致。
+        所以只有叶子节点被删除之后才会需要调整 */
+        if (height_diff == 2)
         {
-            Position tmpTree = tree->right;
             /* x是删除的元素,删除后O是最小不平衡子树的root
                 O
               /   \
              x     o
-                 /
-                o
+                  /
+                 o
             */
-            /* 双旋转 */
-            if (tmpTree->left->height > tmpTree->right->height)
+            /* 这种情况必须用双旋转，单旋转不能改变深度 */
+            if (!root->right->right)
             {
-                tree = doubleRotateWithRight(tree);
+                root = doubleRotateWithRight(root);
             }
             /* 
                 O                       O   
@@ -212,62 +268,69 @@ TreeNode* tree;int x;
             /* 单旋转 */
             else
             {
-                tree = singleRotate(tree, ROTATE_R);
+                root = singleRotate(root, ROTATE_R);
             }
         }
     }
-    else if (x > tree->elem)
+    else if (x > root->elem)
     {
-        tree->right = delete(tree->right, x);
-        if (tree->left->height - tree->right->height == 2)
+        root->right = delete(root->right, x);
+        height_diff = height_lr_diff(root);
+        if (height_diff == 2)
         {
-            Position tmpTree = tree->left;
-            /* x是删除的元素
+            /* x是删除的元素,删除后O是最小不平衡子树的root
                    O
                  /   \
                 o     x
                  \
                   o
             */
-            /* 双旋转 */
-            if (tmpTree->right->height > tmpTree->left->height)
+            /* 这种情况必须用双旋转，单旋转不能改变深度 */
+            if (!root->left->left)
             {
-                tree = doubleRotateWithLeft(tree);
+                root = doubleRotateWithLeft(root);
             }
+            /*       O                  O
+                   /   \              /   \
+                  o     x   或者     o     x
+                /   \               /
+               o     o             o
+           */
             else
             {
-                tree = singleRotate(tree, ROTATE_L);
+                root = singleRotate(root, ROTATE_L);
             }
         }
     }
     else 
     {
         /* 左右子树都存在 */
-        if (tree->left && tree->right)
+        if (root->left && root->right)
         {
-            if (tree->count > 1)
+            if (root->count > 1)
             {
-                --tree->count;
+                --root->count;
             }
             else
             {
                 // 从高的子树中找到元素替换将要删除的节点位置，保证左右子树是平衡的
-                if (tree->left->height > tree->right->height)
+                if (root->left->height > root->right->height)
                 {
-                    TreeNode* tmp = findMax(tree->left);
-                    tree->elem = tmp->elem;
-                    tree->count -= tmp->count;
+                    /* 在左子树中找到最大的值，也就是左子树是空的节点，将它移到将要删除的节点位置 */
+                    TreeNode* tmp = findMax(root->left);
+                    root->elem = tmp->elem;
+                    root->count -= tmp->count;
                     /* 删除移动了元素的节点 */
-                    tree->left = delete(tree->left, tmp->elem);
+                    root->left = delete(root->left, tmp->elem);
                 }
                 else
                 {
                     /* 在右子树中找到最小的值，也就是左子树是空的节点，将它移到将要删除的节点位置 */
-                    TreeNode* tmp = findMin(tree->right);
-                    tree->elem = tmp->elem;
-                    tree->count -= tmp->count;
+                    TreeNode* tmp = findMin(root->right);
+                    root->elem = tmp->elem;
+                    root->count -= tmp->count;
                     /* 删除移动了元素的节点 */
-                    tree->right = delete(tree->right, tmp->elem);
+                    root->right = delete(root->right, tmp->elem);
                 }
             }
         
@@ -275,19 +338,70 @@ TreeNode* tree;int x;
         /* 只存在一个子树,或者不存在子树 */
         else 
         {
-            TreeNode* tmpNode = tree;
-            if (!tree->left)
+            TreeNode* tmpNode = root;
+            if (!root->left)
             {
-                /* 如果两个子树都是空，将right给tree也没问题，因为right就是NULL */
-                tree = tree->right;
+                /* 如果两个子树都是空，将right给root也没问题，因为right就是NULL */
+                root = root->right;
             }
-            else if (!tree->right)
+            else if (!root->right)
             {
-                tree = tree->left;
+                root = root->left;
             }
             free(tmpNode);
         }
     }
-    tree->height = fmax(tree->left->height, tree->right->height) + 1;
-    return tree;
+    if (root)
+    {
+        root->height = height(root);
+    }
+    return root;
+}
+
+
+/**
+ * @brief 前序遍历
+ * 
+ * @param root 
+ * @param level 
+ */
+void pre_order_traverse(SearchTRee root, int level)
+{
+    if (root)
+    {
+        printf("%d-%d ", level, root->elem);
+        pre_order_traverse(root->left, level + 1);
+        pre_order_traverse(root->right, level + 1);
+    }
+}
+
+
+int main(void)
+{
+    int arr[] = {32,50,2,84,69,98,73,62,20,9};
+    SearchTRee root = NULL;
+    int i;
+    for (i = 0; i < sizeof(arr)/sizeof(int); ++i)
+    {
+        root = insert(root, arr[i]);
+        pre_order_traverse(root, 0);
+        printf("\n");
+    }
+    pre_order_traverse(root, 0);
+    printf("\n");
+
+    root = delete(root, 50);
+    pre_order_traverse(root, 0);
+    printf("\n");
+
+    root = delete(root, 32);
+    pre_order_traverse(root, 0);
+    printf("\n");
+
+    root = delete(root, 62);
+    pre_order_traverse(root, 0);
+    printf("\n");
+
+    releaseSTree(root);
+    return 0;
 }

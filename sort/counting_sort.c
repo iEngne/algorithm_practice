@@ -61,12 +61,12 @@ void counting_sort(int* arr, int size)
         return;
     }
     int i;
-    /* 这一步类似于哈希,将数的有序性转化为数组小标的有序性 */
+    /* 这一步类似于哈希,将数的有序性转化为数组下标的有序性 */
     for (i = 0; i < size; ++i)
     {
         ++count_arr[arr[i] - min];
     }
-    /****************下面两个for循环时关键点*****************/
+    /****************下面两个for循环是关键点*****************/
     for (i = 1; i < max - min + 1; ++i)
     {
         count_arr[i] += count_arr[i - 1];
