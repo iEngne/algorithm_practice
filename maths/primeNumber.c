@@ -251,7 +251,7 @@ int countPrimes3(int n){
             // 这里最小的质数是primeNums[j0],i0已经可以被上一次循环的primeNums[j0]因式分解。
             // 如果仍然标记flag[i0 * primeNums[k0]] = 1,会造成重复标记。因为
             // 令i_ = primeNums[j1] * primeNums[k0] > i0, i0 * primeNums[k0] = i_ * primeNums[j0],
-            // 即当外层循环递增i_时，又会标记一次i0 * primeNums[k0]这个合数。
+            // 即当外层循环递增到i_时，又会标记一次i0 * primeNums[k0]这个合数。
             // 所以当i % primeNums[j] == 0时，应该推出循环了。
             flag[i * primeNums[j]] = 1;
             // j继续增大，会不会一直找不到primeNums[j]可以整除i,不可能，为什么？
