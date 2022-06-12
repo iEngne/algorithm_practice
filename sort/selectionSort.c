@@ -31,6 +31,7 @@ void swap(int* a, int* b)
 void selectionSort(int* nums, int size)
 {
     int i = 0;
+    /* 外层循环控制待排序元素的位置 */
     for (; i < size - 1; ++i)
     {
         int minIndex = i;

@@ -12,27 +12,27 @@
 #include "stdio.h"
 
 
-void swap(int* a, int* b)
+void swap(int* x, int* y)
 {
-    if (a != b){
-        *a = *a ^ *b;
-        *b = *a ^ *b;
-        *a = *a ^ *b;
+    if (x != y)
+    {
+        *x = *x ^ *y;
+        *y = *x ^ *y;
+        *x = *x ^ *y;
     }
 }
 
-void bubbleSort(int* nums, int size)
+void bubble_sort(int* nums, int size)
 {
-    /* 外循环用于控制内循环的右边界 */
-    int i = 0;
-    for (; i < size - 1; ++i)
+    int i,j;
+    /* 外层循环控制有边界 */
+    for (i = size - 1; i >=1; --i)
     {
-        int j = 0;
-        for (; j < size - 1 - i; ++j)
+        for (j = 0; j < i; ++j)
         {
             if (nums[j] > nums[j + 1])
             {
-                swap(&num[j], &num[j + 1]);
+                swap(&nums[j], &nums[j+1]);
             }
         }
     }
