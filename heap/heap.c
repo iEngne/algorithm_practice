@@ -113,6 +113,9 @@ int deleteMin(HeapStruct* h)
             break;
         }
     }
+    /** 退出循环有两种可能，1.i没有越界，lastOne比左右子树小，直接用lastOne填充
+     * 上滤的缺口；2.i越界，说明缺口处是叶子节点，没有下层节点了，那么直接用lastOne填充。 
+     */
     h->heap[i] = lastOne;
     --h->size;
     return min;
