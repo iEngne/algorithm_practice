@@ -15,7 +15,7 @@ void swap(int* x, int* y)
 void bubble_sort(int* nums, int size)
 {
     int i,j;
-    /* 外层循环控制有边界 */
+    /* 外层循环控制右边界 */
     for (i = size - 1; i >=1; --i)
     {
         for (j = 0; j < i; ++j)
