@@ -233,8 +233,8 @@ double findMedianSortedArrays1(int* nums1, int nums1Size, int* nums2, int nums2S
         int nums_j   = (j == nums2Size ? INT_MAX : nums2[j]);
         if (nums_i_l <= nums_j)
         {
-            left_max = fmax(nums_i_l, nums_j_l);
-            right_min = fmin(nums_i, nums_j);
+            left_max = fmax((double)nums_i_l, (double)nums_j_l);
+            right_min = fmin((double)nums_i, (double)nums_j);
             left = i + 1;
         }
         else

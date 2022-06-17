@@ -33,7 +33,7 @@
 
 typedef struct hashTable {
     int key;
-    UT_hash_handle hh;
+    UT_hash_handle hh; // 标识符必须使用hh
 } hashTable;
 
 
