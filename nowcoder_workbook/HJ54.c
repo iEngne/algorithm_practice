@@ -73,6 +73,7 @@ int getResult(char* str, int* cur) {
             case '-':
                 buffer[top++] = -num;
                 break;
+            /** 乘除的优先级高，直接计算 */
             case '*':
                 buffer[top - 1] *= num;
                 break;

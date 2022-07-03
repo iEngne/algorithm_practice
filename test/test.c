@@ -85,13 +85,14 @@ int main()
         i += 2;
     }
     printf("\n");
-    char* str_buf = "C";
+    char* str_buf = "Ceabefffaabb";
     int ref_bssid[6];
-    for (int i = 0; i < 6; i++)
+    for (i = 0; i < 6; i++)
     {
-        sscanf(str_buf, "%02x", (int *)&ref_bssid[i]);
+        sscanf(str_buf, "%02x", &ref_bssid[i]);
         printf("%#x ", ref_bssid[i]);
         str_buf += 2;
     }
+    printf("\n");
     return(0);
 }

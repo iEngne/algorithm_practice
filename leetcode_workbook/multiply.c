@@ -27,8 +27,6 @@ void multiplyR(int* res, int a, int b) {
         *res += b;
     }
     a >>= 1;
-    // 注意这里if (!a)不要放到下一次递归中判断，否则b <<= 1有可能越界。
-    // 也就是不能先污染后治理
     if (!a) {
         return;
     }
@@ -36,8 +34,20 @@ void multiplyR(int* res, int a, int b) {
     multiplyR(res, a, b);
 }
 
+int multiplyR1(int a, int b) {
+    if (b == 0) {
+        return 0;
+    }
+    return multiplyR1(a, b - 1) + a;
+}
+
 int multiply(int A, int B){
     int res = 0;
-    multiplyR(&res, A, B);
+    // multiplyR(&res, A, B);
+    if (A > B) {
+        res = multiplyR1(A, B);
+    } else {
+        res = multiplyR1(B, A);  
+    }
     return res;
 }
