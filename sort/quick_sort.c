@@ -10,6 +10,9 @@
  */
 
 #include "stdio.h"
+#include <stdlib.h>
+#include <time.h>
+
 
 void swap(int* a, int* b)
 {
@@ -27,10 +30,6 @@ typedef struct Range
 } Range;
 
 
-int median3(int* nums, int left, int right)
-{
-
-}
 
 /* 非递归的方式,在一次循环中，将可能的边界压栈 */
 void quick_sort1(int* nums, int size)
@@ -91,35 +90,45 @@ void quick_sort1(int* nums, int size)
 }
 
 
+int median3(int* nums, int left, int right)
+{
+    int center = ((left & right) + (left | right)) >> 1;
+    if (nums[left] > nums[center]) {
+        swap(&nums[left], &nums[center]);
+    }
+    if (nums[left] > nums[right]) {
+        swap(&nums[left], &nums[right]);
+    }
+    if (nums[center] > nums[right]) {
+        swap(&nums[center], &nums[right]);
+    }
+    // 把pivot数交换到最后一个位置 */
+    swap(&nums[center], &nums[right - 1]);
+    return nums[right - 1];
+}
+
+
 void q_sort(int* nums, int left, int right)
 {
-    int pivot = (left + right) / 2;
+    int pivot = median3(nums, left, right);
     int i = left;
-    int j = right;
-    for (;i <= j;)
-    {
-        for (;nums[i] < nums[pivot];)
-        {
-            ++i;
-        }
-        for (; nums[j] > nums[pivot];)
-        {
-            --j;
-        }
-        if (i <= j)
+    int j = right - 1;
+    while (i < j) {
+        while (nums[++i] < pivot);
+        while (nums[--j] > pivot);
+        if (i < j)
         {
             swap(&nums[i], &nums[j]);
-            ++i;
-            --j;
         }
     }
-    if (left < j)
-    {
-        q_sort(nums, left, j);
+    /* 把pivot交换回i的位置 */
+    swap(&nums[i], &nums[right - 1]);
+    /* 至少有两个元素再排序 */
+    if (i - 1 - left >= 1) {
+        q_sort(nums, left, i - 1);
     }
-    if (right > i)
-    {
-        q_sort(nums, i, right);
+    if (right - i - 1 >= 1) {
+        q_sort(nums, i + 1, right);
     }
 }
 
@@ -132,13 +141,20 @@ void quick_sort(int *nums, int size)
 
 int main(void)
 {
-    int array[] = {3,4,1,2,5,7,8,6,5,9,10,5};
-    quick_sort(array, sizeof(array)/sizeof(int));
     int i = 0;
-    for (; i < sizeof(array)/sizeof(int); ++i)
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    srand((unsigned int)(tv.tv_usec));
+    int *arr = (int*)malloc(20 * sizeof(int));
+    for (i = 0; i < 20; ++i) {
+        arr[i] = rand() % 100000;
+    }
+    quick_sort(arr, 20);
+    for (i = 0; i < 20; ++i)
     {
-        printf("%d ", array[i]);
+        printf("%d ", arr[i]);
     }
     printf("\n");
+    free(arr);
     return 0;
 }
