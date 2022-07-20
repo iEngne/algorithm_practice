@@ -51,7 +51,7 @@ nums 已按升序排列
 /**
  * 这个写法太垃圾了，时间复杂度是O(N^3)
  */
-int removeDuplicates(int* nums, int numsSize){
+int removeDuplicates1(int* nums, int numsSize){
     int i, j, k;
     for (i = 1; i < numsSize; i++)
     {
