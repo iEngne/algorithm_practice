@@ -1,12 +1,14 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-
-int main(int argc, int** argv)
+int main(int argc, char** argv)
 {
     int a = 1;
     if (argc > 1) {
         a = atoi(argv[1]);
     }
+    int* p = NULL;
+    // p[100] = 100;
     switch (a) {
         case 1: case 2: case 3:
             printf("111\n");
